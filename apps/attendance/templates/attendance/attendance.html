@@ -46,9 +46,8 @@ function onScanSuccess(decodedText, decodedResult) {
         csrfmiddlewaretoken: '{{ csrf_token }}'  // Ensure you include the CSRF token for security
       },
       success: function(response) {
-        // Handle success, maybe show a message to the user
         if (response.success){
-          window.location.href = "{% url 'attendance_marked' %}";
+          window.location.href = response.redirect_url || "{% url 'attendance_marked' %}";
         } else {
           alert(response.message);
         }

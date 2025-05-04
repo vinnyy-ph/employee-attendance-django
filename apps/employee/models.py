@@ -25,15 +25,23 @@ class Employee(models.Model):
         return f'{self.first_name} {self.last_name}'
     
     def save(self, *args, **kwargs):
-        ## remove previous photo if it exists
-        if self.id_card_photo:
-            self.id_card_photo.delete(save=False)
-            
-        ## add id_card_photo to the instance
-        self.id_card_photo.save(
-            f'{self.first_name}_{self.last_name}_id_card.jpg',
-            get_id_card_photo(self),
-            save=False
-        )
-
-        super().save(*args, **kwargs)  
+        # Check if this is a new record that needs an ID card
+        if self.photo:  # Only proceed if a photo was uploaded
+            # Remove previous photo if it exists
+            if self.id_card_photo:
+                self.id_card_photo.delete(save=False)
+                
+            # Add id_card_photo to the instance
+            try:
+                self.id_card_photo.save(
+                    f'{self.first_name}_{self.last_name}_id_card.jpg',
+                    get_id_card_photo(self),
+                    save=False
+                )
+            except Exception as e:
+                # Log the error but don't prevent saving the employee
+                print(f"Error generating ID card: {e}")
+                # Optionally raise the error if you want to prevent saving without ID card
+                # raise
+    
+        super().save(*args, **kwargs)

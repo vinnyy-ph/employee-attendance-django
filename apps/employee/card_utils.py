@@ -18,13 +18,21 @@ def get_id_card_photo(instance):
     card_width, card_height = (675, 1013)
     text_color = (255, 255, 255)
     
-    # open id_card_bg.jpg
-    id_card = Image.open(
-        os.path.join(
-            os.path.dirname(__file__),
-            'data/id_card_bg.jpg'
-        )
+    # Path to the background image
+    bg_image_path = os.path.join(
+        os.path.dirname(__file__),
+        'data/id_card_bg.jpg'
     )
+    
+    # Check if the background image exists
+    if not os.path.exists(bg_image_path):
+        print(f"Warning: ID card background image not found at {bg_image_path}")
+        # Create a blank image instead with a dark blue color
+        id_card = Image.new('RGB', (card_width, card_height), color=(53, 59, 72))
+    else:
+        # open id_card_bg.jpg
+        id_card = Image.open(bg_image_path)
+    
     draw = ImageDraw.Draw(id_card)
     
     # Load a font

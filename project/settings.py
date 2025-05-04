@@ -62,16 +62,25 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+# STORAGES = {
+#     "default": {
+#         "BACKEND": "storages.backends.s3.S3Storage",
+#         "OPTIONS": {
+#           'access_key': os.getenv('AWS_ACCESS_KEY'),
+#           'secret_key': os.getenv('AWS_SECRET_KEY'),
+#           'bucket_name': os.getenv('AWS_BUCKET_NAME'),
+#           'region_name': os.getenv('AWS_REGION_NAME'),
+#           'file_overwrite': False,
+#         },
+#     },
+#     'staticfiles': {
+#         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+#     },
+# }
+
 STORAGES = {
-    "default": {
-        "BACKEND": "storages.backends.s3.S3Storage",
-        "OPTIONS": {
-          'access_key': os.getenv('AWS_ACCESS_KEY'),
-          'secret_key': os.getenv('AWS_SECRET_KEY'),
-          'bucket_name': os.getenv('AWS_BUCKET_NAME'),
-          'region_name': os.getenv('AWS_REGION_NAME'),
-          'file_overwrite': False,
-        },
+    'default': {
+        'BACKEND': 'django.core.files.storage.FileSystemStorage',
     },
     'staticfiles': {
         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
