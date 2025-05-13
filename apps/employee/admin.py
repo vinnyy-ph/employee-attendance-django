@@ -4,9 +4,9 @@ from apps.employee.models import Employee
 admin.site.site_header = 'Employee Management System'
 
 class EmployeeAdmin(admin.ModelAdmin):
-    list_display = ('first_name', 'last_name', 'email', 'phone', 'created_at', 'updated_at')
-    search_fields = ('first_name', 'last_name', 'email', 'phone')
-    list_display_links = ('first_name', 'last_name', 'email', 'phone')
-    readonly_fields = ('id_card_photo',)  # Add this line to make id_card_photo read-only
+    list_display = ('employee_id', 'first_name', 'last_name', 'email', 'designation', 'phone', 'created_at', 'updated_at')
+    search_fields = ('employee_id', 'first_name', 'last_name', 'email', 'phone')
+    list_display_links = ('employee_id', 'first_name', 'last_name', 'email', 'phone')
+    readonly_fields = ('id_card_photo',)
 
 admin.site.register(Employee, EmployeeAdmin)

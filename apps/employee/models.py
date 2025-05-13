@@ -7,14 +7,20 @@ from apps.employee.card_utils import get_id_card_photo
 def validate_image(image):
     if image.file.size > 2 * 1024 * 1024:
         raise ValidationError('Image file too large ( > 2mb )')
-    if image.file.name.split('.')[-1] not in ['jpg', 'jpeg']:
+    
+    # Get the file extension and convert to lowercase for case-insensitive comparison
+    extension = image.file.name.split('.')[-1].lower()
+    
+    # Support both JPEG and PNG as mentioned in the error message
+    if extension not in ['jpg', 'jpeg', 'png']:
         raise ValidationError('Image file type not supported. Only JPEG and PNG files are accepted.')
 
 class Employee(models.Model):
+    employee_id = models.CharField(max_length=50, unique=True, null=True, blank=True)
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     designation = models.CharField(max_length=50)
-    email = models.EmailField(unique=True)
+    email = models.EmailField(unique=True)  # Keeping email for now as it's required by existing code
     phone = models.CharField(max_length=15)
     photo = models.ImageField(upload_to='employee_photos', validators=[validate_image])
     id_card_photo = models.ImageField(upload_to='employee_id_cards', blank=True, null=True)

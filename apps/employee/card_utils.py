@@ -87,7 +87,8 @@ def get_id_card_photo(instance):
     box_size=10,
     border=4,
 )
-    qr.add_data(instance.email)
+    # qr.add_data(instance.email)
+    qr.add_data(instance.employee_id if instance.employee_id else instance.email)
     qr.make(fit=True)
 
     qr_image = qr.make_image(fill_color="black", back_color="white")
