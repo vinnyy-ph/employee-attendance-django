@@ -5,31 +5,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}
-    
-    {% endblock title %}</title>
+    <title>{% block title %}{% endblock title %}</title>
     {% tailwind_css %}
-    {% block head %}
-    
-    {% endblock head %}
+    <style>
+        :root {
+            --accent-color: #00a8a8;
+            --accent-hover: #008f8f;
+            --accent-light: #e6f7f7;
+        }
+        .btn-primary {
+            background-color: var(--accent-color);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+        .btn-primary:hover {
+            background-color: var(--accent-hover);
+        }
+        .text-accent {
+            color: var(--accent-color);
+        }
+        .bg-accent {
+            background-color: var(--accent-color);
+        }
+        .bg-accent-light {
+            background-color: var(--accent-light);
+        }
+        .border-accent {
+            border-color: var(--accent-color);
+        }
+        .ring-accent {
+            --tw-ring-color: var(--accent-color);
+        }
+        .ring-accent-light {
+            --tw-ring-color: var(--accent-light);
+        }
+    </style>
+    {% block head %}{% endblock head %}
 </head>
-<body class="bg-slate-100">
+<body class="bg-slate-50">
     <header>
         <nav class="bg-white shadow">
             <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
               <div class="flex h-16 justify-between">
                 <div class="flex">
                   <div class="flex flex-shrink-0 items-center">
-                    <img class="h-8 w-auto" src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600" alt="Your Company">
+                    <img class="h-auto w-20" src="{% static 'images/kinetiq.png' %}" alt="Kinetiq">
                   </div>
                 </div>
                 {% if request.user.is_authenticated %}
                     <div class="hidden sm:ml-6 sm:flex sm:items-center">
                         <form method="post" action="{% url 'logout' %}">
                             {% csrf_token %}
-                            <button type="submit" class="relative rounded-full bg-white p-1 text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                            <button type="submit" class="relative rounded-full p-2 text-gray-400 hover:bg-accent-light hover:text-accent transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2">
                                 <span class="absolute -inset-1.5"></span>
-                                <span class="sr-only">View notifications</span>
+                                <span class="sr-only">Logout</span>
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M5.636 5.636a9 9 0 1 0 12.728 0M12 3v9" />
                                 </svg>                      
@@ -37,19 +69,14 @@
                         </form>
                     </div>
                 {% endif %}
+              </div>
             </div>
-          
-            
-          </nav>
-          
+        </nav>
     </header>
-    {% block content %}
+    <main class="container mx-auto px-4 py-6">
+        {% block content %}{% endblock content %}
+    </main>
 
-    {% endblock content %}
-
-    {% block js %}
-    
-    {% endblock js %}
-    <div class="sticky bottom-0 text-small text-center">Powered by <a target="_blank" class="text-blue-500 underline" href="https://www.fiverr.com/mohsin_rizz">Mohsin Raza</a></div>
+    {% block js %}{% endblock js %}
 </body>
 </html>

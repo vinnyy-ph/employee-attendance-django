@@ -1,26 +1,83 @@
 {% extends "attendance/base.html" %}
 {% load static %}
 
-{% block title %}
-Employee Attendance | Scan Card
-{% endblock title %}
+{% block title %}Employee Attendance | Scan Card{% endblock title %}
 
 {% block head %}
 <style>
+/* Styling the QR scanner */
 #html5-qrcode-button-camera-permission {
-    background-color: blue;
-    color: white;
-    padding: 5px 8px;
-    border-radius: 20px;
+    background-color: var(--accent-color) !important;
+    color: white !important;
+    padding: 0.5rem 1rem !important;
+    border-radius: 0.375rem !important;
+    font-weight: 500 !important;
+    transition: background-color 0.2s !important;
+    border: none !important;
+}
+#html5-qrcode-button-camera-permission:hover {
+    background-color: var(--accent-hover) !important;
+}
+#html5-qrcode-button-camera-start, 
+#html5-qrcode-button-camera-stop {
+    background-color: var(--accent-color) !important;
+    color: white !important;
+    padding: 0.5rem 1rem !important;
+    border-radius: 0.375rem !important;
+    font-weight: 500 !important;
+    transition: background-color 0.2s !important;
+    border: none !important;
+    margin: 0.5rem 0 !important;
+}
+#html5-qrcode-button-camera-start:hover, 
+#html5-qrcode-button-camera-stop:hover {
+    background-color: var(--accent-hover) !important;
+}
+#html5-qrcode-select-camera {
+    border-radius: 0.375rem !important;
+    padding: 0.5rem !important;
+    border-color: #d1d5db !important;
+    width: 100% !important;
+    margin-bottom: 1rem !important;
+}
+#reader {
+    border: none !important;
+    border-radius: 0.375rem !important;
+    overflow: hidden !important;
+}
+#reader__scan_region {
+    padding: 1rem !important;
+    background-color: var(--accent-light) !important;
+}
+#reader__scan_region img {
+    max-width: 100% !important;
 }
 </style>
 {% endblock head %}
 
 {% block content %}
-<div class="flex flex-col h-screen justify-center items-center">
-<h1 class="text-2xl text-center py-6">SCAN YOUR ID CARD</h1>
-    <div class="w-[500px] h-min p-6 bg-white border border-gray-200 rounded-lg shadow ">
-        <div id="reader" width="600px"></div>
+<div class="flex flex-col max-w-lg mx-auto">
+    <div class="text-center mb-6">
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">Attendance System</h1>
+        <p class="text-sm text-gray-600">Scan your ID card or QR code to check in/out</p>
+    </div>
+    
+    <div class="bg-white rounded-lg shadow-lg border border-gray-100 overflow-hidden">
+        <div class="bg-accent p-4">
+            <h2 class="text-xl font-semibold text-white text-center">SCAN YOUR ID CARD</h2>
+        </div>
+        <div class="p-6">
+            <div id="reader" class="mx-auto"></div>
+            <div id="scan-status" class="mt-4 text-center hidden">
+                <div class="inline-flex items-center px-4 py-2 font-semibold leading-6 text-sm rounded-md text-accent bg-accent-light">
+                    <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-accent" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Processing your scan...
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock content %}
@@ -32,47 +89,68 @@ Employee Attendance | Scan Card
   integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
   crossorigin="anonymous"></script>
 <script>
-
 function onScanSuccess(decodedText, decodedResult) {
-  // handle the scanned code as you like, for example:
+  // Show processing indicator
+  document.getElementById('scan-status').classList.remove('hidden');
+  
   console.log(`Code matched = ${decodedText}`, decodedResult);
   if(decodedResult.result.format.formatName === "QR_CODE") {
     console.log('Sending request')
     $.ajax({
       type: "POST",
-      url: "{% url 'attendance' %}",  // Replace with your actual endpoint URL
+      url: "{% url 'attendance' %}",
       data: {
         text: decodedText,
-        csrfmiddlewaretoken: '{{ csrf_token }}'  // Ensure you include the CSRF token for security
+        csrfmiddlewaretoken: '{{ csrf_token }}'
       },
       success: function(response) {
         if (response.success){
           window.location.href = response.redirect_url || "{% url 'attendance_marked' %}";
         } else {
+          // Hide processing indicator
+          document.getElementById('scan-status').classList.add('hidden');
           alert(response.message);
         }
       },
       error: function(xhr, status, error) {
-        // Handle error, maybe show a message to the user
+        // Hide processing indicator
+        document.getElementById('scan-status').classList.add('hidden');
         console.error("Error marking attendance:", error);
         alert("Error marking attendance. Please try again.");
       },
       complete: function(data){
-        html5QrcodeScanner.resume()
+        html5QrcodeScanner.resume();
       }
     });
   }
 }
 
 function onScanFailure(error) {
-  // handle scan failure, usually better to ignore and keep scanning.
-  // for example:
+  // We can ignore scan failures as they happen frequently when no QR code is present
+  // console.warn(`QR code scanning failed: ${error}`);
 }
 
 let html5QrcodeScanner = new Html5QrcodeScanner(
   "reader",
-  { fps: 10, qrbox: {width: 250, height: 250} },
+  { 
+    fps: 10, 
+    qrbox: {width: 250, height: 250},
+    rememberLastUsedCamera: true,
+    showTorchButtonIfSupported: true
+  },
   /* verbose= */ false);
+
 html5QrcodeScanner.render(onScanSuccess, onScanFailure);
+
+// Add custom styling after the scanner is rendered
+setTimeout(() => {
+  // Find and style elements that may have been dynamically created
+  const scannerHeader = document.querySelector('#reader__header');
+  if (scannerHeader) {
+    scannerHeader.style.background = 'var(--accent-light)';
+    scannerHeader.style.color = 'var(--accent-color)';
+    scannerHeader.style.padding = '0.5rem';
+  }
+}, 1000);
 </script>
 {% endblock js %}

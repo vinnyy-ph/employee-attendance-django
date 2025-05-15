@@ -1,19 +1,37 @@
 {% extends "attendance/base.html" %}
 {% load static %}
 
-{% block title %}
-Employee Attendance | Marked
-{% endblock title %}
+{% block title %}Employee Attendance | Confirmed{% endblock title %}
 
 {% block head %}
 
 {% endblock head %}
 
 {% block content %}
-<div class="flex flex-col h-screen justify-center items-center">
-<h1 class="text-2xl text-center py-6">{{ message }}</h1>
-    <div class="w-[500px] h-min p-6 bg-white border border-gray-200 rounded-lg shadow flex justify-center">
-            <dotlottie-player src="https://lottie.host/2f86cb2f-2319-480b-a1c3-afc0e016b8d0/3PegRoRM5c.json" background="transparent" speed="1" style="width: 300px; height: 300px;" loop autoplay></dotlottie-player>
+<div class="flex flex-col max-w-lg mx-auto">
+    <div class="bg-white rounded-lg shadow-lg border border-gray-100 overflow-hidden">
+        <div class="bg-accent p-4">
+            <h2 class="text-xl font-semibold text-white text-center">Attendance Confirmed</h2>
+        </div>
+        <div class="p-6 flex flex-col items-center">
+            <div class="text-center mb-4">
+                <p class="text-xl font-medium text-gray-900">{{ message }}</p>
+                <p class="text-sm text-gray-500 mt-2">You will be redirected back to the scanner in a few seconds</p>
+            </div>
+            <div class="success-animation">
+                <dotlottie-player src="https://lottie.host/2f86cb2f-2319-480b-a1c3-afc0e016b8d0/3PegRoRM5c.json" background="transparent" speed="1" style="width: 200px; height: 200px;" loop autoplay></dotlottie-player>
+            </div>
+            <div class="mt-4">
+                <div class="inline-flex rounded-md shadow-sm">
+                    <a href="{% url 'attendance' %}" class="btn-primary flex items-center">
+                        <svg class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M7.793 2.232a.75.75 0 01-.025 1.06L3.622 7.25h10.003a5.375 5.375 0 010 10.75H10.75a.75.75 0 010-1.5h2.875a3.875 3.875 0 000-7.75H3.622l4.146 3.957a.75.75 0 01-1.036 1.085l-5.5-5.25a.75.75 0 010-1.085l5.5-5.25a.75.75 0 011.06.025z" clip-rule="evenodd" />
+                        </svg>
+                        Return to Scanner
+                    </a>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock content %}
